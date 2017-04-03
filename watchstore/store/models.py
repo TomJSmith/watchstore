@@ -6,3 +6,4 @@ class Customer(models.Model):
 	Password = models.CharField(min_length=200)
 	FName = models.CharField(max_length=50)
 	LName = models.CharField(max_length=50)
+	
