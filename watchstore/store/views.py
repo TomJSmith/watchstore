@@ -14,3 +14,7 @@ def product(request, productName):
 def user(request, userName):
     response = "user page for user %s" % userName
     return HttpResponse(response)
+	
+def customer(request, customerName):
+	response = "customer %s" %customerName
+	return HttpResponse(response)
