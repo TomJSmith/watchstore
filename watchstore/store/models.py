@@ -1,5 +1,4 @@
 from django.db import models
-from address.models import AddressField
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
@@ -8,7 +7,7 @@ class Customer(models.Model):
 	Password = models.CharField(max_length=50)
 	FName = models.CharField(max_length=50)
 	LName = models.CharField(max_length=50)
-	Address = AddressField()
+	Address = models.CharField(max_length=200)
 	def __str__(self):
 		return self.Email
 	
@@ -17,17 +16,21 @@ class Credit_Card(models.Model):
 	FName = models.CharField(max_length=50)
 	LName = models.CharField(max_length=50)
 	Expiry_Date = models.DateField('Date (m/y)') # how to change datefield format or use something else
-	Security_Code = models.IntegerField()
+	Security_Code = models.IntegerField(default=0)
 	CEmail = models.ForeignKey(Customer, on_delete=models.CASCADE)
 	def __str__(self):
 		return "%d" % self.Number
 	
 class Moderator(models.Model):
+	HIGH = 'HI'
+	MEDIUM = 'MED'
+	LOW = 'LOW'
+	RESP_CHOICE = ((HIGH, 'High'), (MEDIUM, 'Medium'), (LOW, 'Low'))
 	Email = models.EmailField(max_length=50, primary_key=True)
 	Password = models.CharField(max_length=50)
 	FName = models.CharField(max_length=50)
 	LName = models.CharField(max_length=50)
-	Resp_Level = models.IntegerField() #integer or char?
+	Resp_Level = models.CharField(max_length=50, choices=RESP_CHOICE) #integer or char?
 	def __str__(self):
 		return self.Email
 	
@@ -40,8 +43,8 @@ class Merchant(models.Model):
 	Password = models.CharField(max_length=50)
 	FName = models.CharField(max_length=50)
 	LName = models.CharField(max_length=50)
-	Banking_Info = models.CharField(max_length=100) # should probably be an entity?
-	Address = AddressField()
+	Banking_Info = models.CharField(max_length=200) # should probably be an entity?
+	Address = models.CharField(max_length=200)
 	Reviewed_By = models.ForeignKey(Moderator, on_delete=models.CASCADE)
 	Status = models.CharField(max_length=50, choices=STATUS_CHOICE)
 	def __str__(self):
@@ -56,7 +59,6 @@ class Product(models.Model):
 	Type = models.CharField(max_length=50)
 	Compatibility = models.TextField(blank=True)
 	Seller_Email = models.ForeignKey(Merchant, on_delete=models.CASCADE)
-	Image = models.URLField(max_length=200)
 	#Buyer_Email = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True, blank=True) #multiple tuples of the same info except for this field Can be null?
 	def __str__(self):
 		return "%d %s" % (self.ID, self.Name)
@@ -64,8 +66,8 @@ class Product(models.Model):
 class Order(models.Model):
 	Order_Number = models.AutoField(primary_key=True)
 	Total_Price = models.DecimalField(max_digits=19, decimal_places=2, default=0.00, validators=[MinValueValidator(0.00)])
-	Shipping_Info = AddressField(related_name='shipping_info')
-	Billing_Info = AddressField(related_name='billing_info') # need cc info?
+	Shipping_Info = models.CharField(max_length=200)
+	Billing_Info = models.CharField(max_length=200) # need cc info?
 	Placed_By = models.ForeignKey(Customer, on_delete=models.CASCADE)
 	Product_ID = models.ManyToManyField(Product)
 	def __str__(self):

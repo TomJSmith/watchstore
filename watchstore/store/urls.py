@@ -4,6 +4,5 @@ from . import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^product/(?P<productName>.+)/$', views.product, name='product_page'),
-    url(r'^user/(?P<userName>.+)/$', views.user, name='user_profile'),
-	url(r'^customer/(?P<customerName>.+)/$', views.customer, name='customer_page'),
+    url(r'^user/(?P<userName>.+)/$', views.user, name='user_profile')
 ]
