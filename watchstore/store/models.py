@@ -62,6 +62,12 @@ class Product(models.Model):
 	#Buyer_Email = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True, blank=True) #multiple tuples of the same info except for this field Can be null?
 	def __str__(self):
 		return "%d %s" % (self.ID, self.Name)
+		
+class ProductImage(models.Model):
+	Product_ID = models.ForeignKey(Product, on_delete=models.CASCADE)
+	Image = models.URLField(max_length=200)
+	def __str__(self):
+		return "%s" % self.Product_ID
 	
 class Order(models.Model):
 	Order_Number = models.AutoField(primary_key=True)
