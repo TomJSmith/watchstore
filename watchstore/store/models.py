@@ -5,18 +5,18 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 class Customer(models.Model):
 	Email = models.EmailField(max_length=50, primary_key=True)
 	Password = models.CharField(max_length=50)
-	FName = models.CharField(max_length=50)
-	LName = models.CharField(max_length=50)
+	FName = models.CharField('First Name', max_length=50)
+	LName = models.CharField('Last Name', max_length=50)
 	Address = models.CharField(max_length=200)
 	def __str__(self):
 		return self.Email
 	
 class Credit_Card(models.Model):
-	Number = models.IntegerField(primary_key=True)
-	FName = models.CharField(max_length=50)
-	LName = models.CharField(max_length=50)
+	Number = models.IntegerField('Credit Card Number', primary_key=True)
+	FName = models.CharField('First Name', max_length=50)
+	LName = models.CharField('Last Name', max_length=50)
 	Expiry_Date = models.DateField('Date (m/y)') # how to change datefield format or use something else
-	Security_Code = models.IntegerField(default=0)
+	Security_Code = models.IntegerField()
 	CEmail = models.ForeignKey(Customer, on_delete=models.CASCADE)
 	def __str__(self):
 		return "%d" % self.Number
@@ -28,9 +28,9 @@ class Moderator(models.Model):
 	RESP_CHOICE = ((HIGH, 'High'), (MEDIUM, 'Medium'), (LOW, 'Low'))
 	Email = models.EmailField(max_length=50, primary_key=True)
 	Password = models.CharField(max_length=50)
-	FName = models.CharField(max_length=50)
-	LName = models.CharField(max_length=50)
-	Resp_Level = models.CharField(max_length=50, choices=RESP_CHOICE) #integer or char?
+	FName = models.CharField('First Name', max_length=50)
+	LName = models.CharField('Last Name', max_length=50)
+	Resp_Level = models.CharField('Responsibility Level', max_length=50, choices=RESP_CHOICE) #integer or char?
 	def __str__(self):
 		return self.Email
 	
@@ -41,8 +41,8 @@ class Merchant(models.Model):
 	STATUS_CHOICE = ((APPROVED, 'Approved'), (REJECTED, 'Rejected'), (PENDING, 'Pending'))
 	Email = models.EmailField(max_length=50, primary_key=True)
 	Password = models.CharField(max_length=50)
-	FName = models.CharField(max_length=50)
-	LName = models.CharField(max_length=50)
+	FName = models.CharField('First Name', max_length=50)
+	LName = models.CharField('Last Name', max_length=50)
 	Banking_Info = models.CharField(max_length=200) # should probably be an entity?
 	Address = models.CharField(max_length=200)
 	Reviewed_By = models.ForeignKey(Moderator, on_delete=models.CASCADE)
