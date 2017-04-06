@@ -77,6 +77,7 @@ class Product(models.Model):
 class ProductImage(models.Model):
     Product_ID = models.ForeignKey(Product, on_delete=models.CASCADE)
     Image = models.URLField(max_length=200)
+    Primary = models.BooleanField(default=False)
 
     def __str__(self):
         return "%s" % self.Product_ID
