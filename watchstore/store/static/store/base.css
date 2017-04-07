@@ -1,9 +1,11 @@
 body {
     margin: 0;
     font-family: sans-serif;
+    background-color: whitesmoke;
 }
 
 #navBar {
+    padding: 0 48px;
     background-color: white;
     display: block;
     border-style: solid;

@@ -4,6 +4,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watchstore</title>
     <link rel="stylesheet" type="text/css" href="{% static 'store/base.css' %}"/>
     {% block style %}
@@ -11,7 +12,9 @@
 </head>
 <body>
 <div id="navBar">
-    <img id="navLogo" alt="watchstore 471" src="{% static 'store/logo.png' %}">
+    <a href="/store/">
+        <img id="navLogo" alt="watchstore 471" src="{% static 'store/logo.png' %}">
+    </a>
     <button class="navButton">sign up</button>
     <button class="navButton">log in</button>
 </div>

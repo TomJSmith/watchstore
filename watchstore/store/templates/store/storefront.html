@@ -1,6 +1,24 @@
 {% extends 'store/base.html' %}
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" type="text/css" href="{% static 'store/storefront.css' %}"/>
+{% endblock %}
 
 {% block content %}
-<h1>THIS IS THE STOREFRONT</h1>
-
+    <ul class="productList">
+    {% for i in "....." %}
+        <li class="productListing">
+            <div class="iconContainer">
+                <img class="productIcon" src="http://i.imgur.com/rhdNlOI.jpg">
+            </div>
+            <div class="productDetails">
+                <div class="productName">Rolex expensiveman</div>
+                <div class="productMerchant">ProductMerchant</div>
+                <div class="productPrice">$200000.98</div>
+                <div class="productReviewScore">4/5 (35 reviews)</div>
+            </div>
+        </li>
+    {% endfor %}
+    </ul>
 {% endblock %}
