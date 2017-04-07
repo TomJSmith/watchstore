@@ -4,6 +4,11 @@ body {
     background-color: whitesmoke;
 }
 
+.pageContent {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
 #navBar {
     padding: 0 48px;
     background-color: white;
@@ -19,9 +24,9 @@ body {
     padding: 10px 0 5px 10px;
 }
 
-.navButton {
+.button {
+    display: inline-block;
     opacity: .7;
-    float: right;
     color: #FF3300;
     background-color: white;
     border-color: rgba(128, 128, 128, 0.8);
@@ -31,8 +36,13 @@ body {
     padding: 10px 15px;
     margin: 22px 15px 0 0;
     cursor: pointer;
+    text-decoration: none;
 }
 
-.navButton:hover {
+.rightFloat {
+    float: right;
+}
+
+.button:hover {
     opacity: 1;
 }

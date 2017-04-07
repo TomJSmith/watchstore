@@ -1,0 +1,14 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static 'store/loginSignupChoice.css' %}"/>
+{% endblock %}
+
+{% block content %}
+<div class="buttonContainer">
+    <a href="/store/{{ loginSignup }}/customer" class="button">Customer</a>
+    <a href="/store/{{ loginSignup }}/merchant" class="button">Merchant</a>
+    <a href="/store/{{ loginSignup }}/moderator" class="button">Moderator</a>
+</div>
+{% endblock %}
