@@ -53,7 +53,7 @@ class Merchant(models.Model):
     Banking_Info = models.CharField(max_length=200)  # should probably be an entity?
     Address = models.CharField(max_length=200)
     Reviewed_By = models.ForeignKey(Moderator, on_delete=models.CASCADE)
-    Status = models.CharField(max_length=50, choices=STATUS_CHOICE)
+    Status = models.CharField(max_length=50, choices=STATUS_CHOICE, default=PENDING)
 
     def __str__(self):
         return self.Email
@@ -68,20 +68,11 @@ class Product(models.Model):
     Type = models.CharField(max_length=50)
     Compatibility = models.TextField(blank=True)
     Seller_Email = models.ForeignKey(Merchant, on_delete=models.CASCADE)
+    Image = models.URLField(max_length=200, default='')
 
     # Buyer_Email = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True, blank=True) #multiple tuples of the same info except for this field Can be null?
     def __str__(self):
         return "%d %s" % (self.ID, self.Name)
-
-
-class ProductImage(models.Model):
-    Product_ID = models.ForeignKey(Product, on_delete=models.CASCADE)
-    Image = models.URLField(max_length=200)
-    Primary = models.BooleanField(default=False)
-
-    def __str__(self):
-        return "%s" % self.Product_ID
-
 
 class Order(models.Model):
     Order_Number = models.AutoField(primary_key=True)
