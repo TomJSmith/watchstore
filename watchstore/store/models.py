@@ -91,7 +91,7 @@ class Order(models.Model):
 
 class Merchant_Review(models.Model):
     Merchant_Email = models.ForeignKey(Merchant, on_delete=models.CASCADE)
-    Cusomter_Email = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    Customer_Email = models.ForeignKey(Customer, on_delete=models.CASCADE)
     Rating = models.DecimalField(max_digits=2, decimal_places=1, validators=[MinValueValidator(0.0), MaxValueValidator(
         5.0)])  # rating scheme stars, numbers, etc
     Feedback = models.TextField()
@@ -102,7 +102,7 @@ class Merchant_Review(models.Model):
 
 class Product_Review(models.Model):
     Product_ID = models.ForeignKey(Product, on_delete=models.CASCADE)
-    Cusomter_Email = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    Customer_Email = models.ForeignKey(Customer, on_delete=models.CASCADE)
     Rating = models.DecimalField(max_digits=2, decimal_places=1, validators=[MinValueValidator(0.0), MaxValueValidator(
         5.0)])  # rating scheme stars, numbers, etc
     Feedback = models.TextField()
@@ -112,7 +112,7 @@ class Product_Review(models.Model):
 
 
 class Cart(models.Model):
-    Cusomter_Email = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    Customer_Email = models.ForeignKey(Customer, on_delete=models.CASCADE)
     Product_ID = models.ManyToManyField(Product, blank=True)
 
     def __str__(self):
