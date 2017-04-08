@@ -7,10 +7,10 @@
 
 {% block content %}
 
-<form class="form" method="post" action="">
+<form method="post" action="">
     <h1>{{ userType }} sign up</h1>
     {% csrf_token %}
     {{ signupForm }}
-    <input class="button" type="submit">
+    <input class="button" type="submit" value="Create Account">
 </form>
 {% endblock %}

@@ -7,18 +7,20 @@
 
 {% block content %}
     <ul class="productList">
-    {% for product in featured %}
-        <li class="productListing">
-            <div class="iconContainer">
-                <img class="productIcon" src={{product.Image}}>
-            </div>
-            <div class="productDetails">
-                <div class="productName">{{product.Name}}</div>
-                <div class="productMerchant">{{product.Seller_Email}}</div>
-                <div class="productPrice">${{product.Price}}</div>
-                <div class="productReviewScore">4/5 (35 reviews) (Default value)</div>		
-            </div>
-        </li>
+    {% for product in watches %}
+        <a href="product/{{product.ID}}">
+            <li class="productListing">
+                <div class="iconContainer">
+                    <img class="productIcon" src={{product.Image}}>
+                </div>
+                <div class="productDetails">
+                    <div class="productName">{{product.Name}}</div>
+                    <div class="productMerchant">{{product.Seller_Email}}</div>
+                    <div class="productPrice">${{product.Price}}</div>
+                    <div class="productReviewScore">4/5 (35 reviews) (Default value)</div>
+                </div>
+            </li>
+        </a>
     {% endfor %}
     </ul>
 {% endblock %}
