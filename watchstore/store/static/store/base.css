@@ -49,7 +49,14 @@ body {
 
 a {
     color: inherit;
+    text-decoration: none;
 }
+
+a:visited {
+    color: inherit;
+    text-decoration: none;
+}
+
 
 form {
     /*display: inline-block;*/

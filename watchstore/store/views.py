@@ -47,7 +47,7 @@ def signup(request, userType):
 
 
 def product(request, productID):
-    theProduct = Product.objects.raw("SELECT * FROM store_product WHERE ID = %s", [productID])
+    theProduct = Product.objects.raw("SELECT * FROM store_product WHERE ID = %s", [productID])[0]
     print(theProduct)
     response = "You are looking at the product page for %s" % productID
     return render(request, 'store/productPage.html', {'product': theProduct})
