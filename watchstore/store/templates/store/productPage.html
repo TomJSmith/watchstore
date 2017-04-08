@@ -9,4 +9,9 @@
 </a>
 <h2>{{ product.Price }}</h2>
 <p>{{ product.Description }}</p>
+<form method="post" action="">
+    {% csrf_token %}
+    {{ reviewForm }}
+    <input class="button" type="submit" value="Submit Review">
+</form>
 {% endblock %}

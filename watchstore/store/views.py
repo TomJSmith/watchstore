@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from store.forms import CustomerForm, ModeratorForm, MerchantForm
+from store.forms import CustomerForm, ModeratorForm, MerchantForm, ProductReviewForm
 from store.models import Product
 from itertools import chain
 
@@ -47,9 +47,10 @@ def signup(request, userType):
 
 
 def product(request, productID):
+    form = ProductReviewForm()
     theProduct = Product.objects.raw("SELECT * FROM store_product WHERE ID = %s", [productID])[0]
     response = "You are looking at the product page for %s" % productID
-    return render(request, 'store/productPage.html', {'product': theProduct})
+    return render(request, 'store/productPage.html', {'product': theProduct, 'reviewForm': form})
 
 
 def merchant(request, merchantID):
