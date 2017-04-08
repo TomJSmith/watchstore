@@ -2,12 +2,13 @@
 {% load static %}
 
 {% block style %}
-    <link rel="stylesheet" type="text/css" href="{% static 'store/storefront.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'store/results.css' %}"/>
 {% endblock %}
 
 {% block content %}
+	<h1><center> Search results for "{{query}}"</center></h1>
     <ul class="productList">
-    {% for product in featured %}
+    {% for product in products %}
         <li class="productListing">
             <div class="iconContainer">
                 <img class="productIcon" src={{product.Image}}>
@@ -16,7 +17,7 @@
                 <div class="productName">{{product.Name}}</div>
                 <div class="productMerchant">{{product.Seller_Email}}</div>
                 <div class="productPrice">${{product.Price}}</div>
-                <div class="productReviewScore">4/5 (35 reviews) (Default value)</div>		
+<!--                <div class="productReviewScore">4/5 (35 reviews)</div>		-->
             </div>
         </li>
     {% endfor %}

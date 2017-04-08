@@ -15,8 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from store import views
 
 urlpatterns = [
     url(r'^store/', include('store.urls')),
     url(r'^admin/', admin.site.urls),
+	url(r'^$', views.storefront, name='store_front'),
 ]
