@@ -1,0 +1,16 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" type="text/css" href="{% static 'store/searchform.css' %}"/>
+{% endblock %}
+
+{% block content %}
+	<form method="POST" action="/store/search/results/">
+		<center>
+		<input type="text" name="query">
+		 {% csrf_token %}
+		<input class="button" type="submit">
+		</center>
+	</form>
+{% endblock %}
