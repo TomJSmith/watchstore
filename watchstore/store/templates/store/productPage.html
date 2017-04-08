@@ -1,6 +1,12 @@
 {% extends 'store/base.html' %}
 
 {% block content %}
+<img src="{{ product.Image }}">
 <h1>{{ product.Name }}</h1>
-<h1>test</h1>
+<h3>{{ product.Brand }}</h3>
+<a href="/store/merchant/{{ product.Seller_Email }}">
+    <h3>{{ product.Seller_Email }}</h3>
+</a>
+<h2>{{ product.Price }}</h2>
+<p>{{ product.Description }}</p>
 {% endblock %}

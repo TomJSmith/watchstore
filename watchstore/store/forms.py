@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from store.models import Customer, Moderator, Merchant
+from store.models import Customer, Moderator, Merchant, Product_Review
 
 
 class CustomerForm(ModelForm):
@@ -18,3 +18,9 @@ class MerchantForm(ModelForm):
     class Meta:
         model = Merchant
         fields = ['Email', 'Password', 'FName', 'LName', 'Banking_Info', 'Address']
+
+
+class ProductReviewForm(ModelForm):
+    class Meta:
+        model = Product_Review
+        fields = ['Feedback', 'Customer_Email', 'Rating']
