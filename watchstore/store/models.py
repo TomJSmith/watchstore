@@ -52,7 +52,7 @@ class Merchant(models.Model):
     LName = models.CharField('Last Name', max_length=50)
     Banking_Info = models.CharField(max_length=200)  # should probably be an entity?
     Address = models.CharField(max_length=200)
-    Reviewed_By = models.ForeignKey(Moderator, on_delete=models.CASCADE)
+    Reviewed_By = models.ForeignKey(Moderator, on_delete=models.CASCADE, blank=True, null=True)
     Status = models.CharField(max_length=50, choices=STATUS_CHOICE, default=PENDING)
 
     def __str__(self):
