@@ -16,8 +16,13 @@
         <img id="navLogo" alt="watchstore 471" src="{% static 'store/logo.png' %}">
     </a>
 	<a class="button rightFloat" href="/store/search/">Search</a>
-    <a class="button rightFloat" href="/store/choice/signup">sign up</a>
-    <a class="button rightFloat" href="/store/choice/login">log in</a>
+    {% if request.session.loggedIn %}
+        <a class="button rightFloat" href="/store/myAccount">my account</a>
+        <a class="button rightFloat" href="/store/logout">logout</a>
+    {% else %}
+        <a class="button rightFloat" href="/store/choice/signup">sign up</a>
+        <a class="button rightFloat" href="/store/choice/login">log in</a>
+    {% endif %}
 </div>
 <div class="pageContent">
     {% block content %}

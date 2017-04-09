@@ -1,17 +1,19 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from store.forms import CustomerForm, ModeratorForm, MerchantForm, ProductReviewForm
+from store.forms import CustomerForm, ModeratorForm, MerchantForm, ProductReviewForm, LoginForm
 from store.models import Product, Product_Review
 from django.db import connection
 
 
 def storefront(request):
+    print(request.session['loggedIn'])
+    print(request.session['userName'])
+    print(request.session['userType'])
     watchList = []
     with connection.cursor() as cursor:
         cursor.execute('SELECT p.ID, p.Image, p.Name, p.Seller_Email_id, p.Price, AVG(r.Rating), COUNT(r.id) FROM store_product p LEFT JOIN store_product_review r ON p.ID = r.Product_ID_id GROUP BY p.ID')
         resultSet = cursor.fetchall()
         for row in resultSet:
-            print(row)
             watchList.append({'ID': row[0],
                               'Image': row[1],
                               'Name': row[2],
@@ -20,24 +22,38 @@ def storefront(request):
                               'Rating': row[5],
                               'NumReviews': row[6]})
     return render(request, 'store/storefront.html',
-                  {'watches': watchList}
-                  )
+                  {'watches': watchList})
 
 
 def logInSignUpChoice(request, logInSignUp):
     return render(request, 'store/logInSignupChoice.html', context={'loginSignup': logInSignUp})
 
 
+def logout(request):
+    request.session['loggedIn'] = False
+    request.session['username'] = None
+    request.session['userType'] = None
+    return redirect('store_front')
+
+
 def login(request, userType):
-    loginForm = None
     if request.method == 'POST':
-        loginForm = CustomerForm(request.POST, request.FILES)
+        loginForm = LoginForm(request.POST, request.FILES)
         if loginForm.is_valid():
-            loginForm.save()
-            return redirect('store_front')
+            username = loginForm.cleaned_data['username']
+            password = loginForm.cleaned_data['password']
+            sql = "SELECT Password FROM store_%s WHERE Email = '%s'" % (userType, username)
+            with connection.cursor() as cursor:
+                cursor.execute(sql)
+                pw = cursor.fetchone()
+                if pw and pw[0] == password:
+                    request.session['loggedIn'] = True
+                    request.session['userType'] = userType
+                    request.session['userName'] = username
+                    return redirect('store_front')
     else:
-        loginForm = CustomerForm()
-    return render(request, 'store/login.html', {'loginForm': loginForm})
+        loginForm = LoginForm()
+    return render(request, 'store/login.html', {'loginForm': loginForm, 'userType': userType})
 
 
 def signup(request, userType):

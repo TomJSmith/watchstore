@@ -6,5 +6,10 @@
 {% endblock %}
 
 {% block content %}
-
+<form method="post" action="" enctype="multipart/form-data">
+    <h1>{{ userType }} login</h1>
+    {% csrf_token %}
+    {{ loginForm }}
+    <input type="submit" value="login">
+</form>
 {% endblock %}
