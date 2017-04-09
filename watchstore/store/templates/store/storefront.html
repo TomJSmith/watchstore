@@ -17,7 +17,9 @@
                     <div class="productName">{{product.Name}}</div>
                     <div class="productMerchant">{{product.Seller_Email}}</div>
                     <div class="productPrice">${{product.Price}}</div>
-                    <div class="productReviewScore">4/5 (35 reviews) (Default value)</div>
+                    {% if product.NumReviews > 0 %}
+                        <div class="productReviewScore">{{product.Rating|floatformat}}/5 ({{product.NumReviews}} reviews)</div>
+                    {% endif %}
                 </div>
             </li>
         </a>

@@ -1,15 +1,34 @@
 {% extends 'store/base.html' %}
+{% load static %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static 'store/productPage.css' %}"/>
+{% endblock %}
 
 {% block content %}
-<img src="{{ product.Image }}">
-<h1>{{ product.Name }}</h1>
-<h3>{{ product.Brand }}</h3>
-<a href="/store/merchant/{{ product.Seller_Email }}">
-    <h3>{{ product.Seller_Email }}</h3>
-</a>
-<h2>{{ product.Price }}</h2>
-<p>{{ product.Description }}</p>
-<form method="post" action="">
+<div class="productFrame">
+    <img src="{{ product.Image }}">
+    <h1>{{ product.Name }}</h1>
+    <h3>{{ product.Brand }}</h3>
+    <h2>${{ product.Price }}</h2>
+    <a href="/store/merchant/{{ product.Seller_Email }}">
+        <h3>{{ product.Seller_Email }}</h3>
+    </a>
+    <p>{{ product.Description }}</p>
+    {% if reviewCount > 0 %}
+        <h3>{{ avgRating|floatformat }}/5 ({{ reviewCount }} review(s))</h3>
+    {% endif %}
+{% for review in reviews %}
+    <div class="review">
+        <h5>{{ review.Customer_Email }}</h5>
+        <p>{{ review.Feedback }}</p>
+        <h4>{{ review.Rating }}/5</h4>
+    </div>
+{% endfor %}
+
+</div>
+<form method="post" action=".">
+    <h1>Leave a review</h1>
     {% csrf_token %}
     {{ reviewForm }}
     <input class="button" type="submit" value="Submit Review">

@@ -1,14 +1,26 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from store.forms import CustomerForm, ModeratorForm, MerchantForm, ProductReviewForm
-from store.models import Product
-from itertools import chain
+from store.models import Product, Product_Review
+from django.db import connection
 
 
 def storefront(request):
-    watches = Product.objects.raw('SELECT * FROM store_product ORDER BY name')
+    watchList = []
+    with connection.cursor() as cursor:
+        cursor.execute('SELECT p.ID, p.Image, p.Name, p.Seller_Email_id, p.Price, AVG(r.Rating), COUNT(r.id) FROM store_product p LEFT JOIN store_product_review r ON p.ID = r.Product_ID_id GROUP BY p.ID')
+        resultSet = cursor.fetchall()
+        for row in resultSet:
+            print(row)
+            watchList.append({'ID': row[0],
+                              'Image': row[1],
+                              'Name': row[2],
+                              'Seller_Email': row[3],
+                              'Price': row[4],
+                              'Rating': row[5],
+                              'NumReviews': row[6]})
     return render(request, 'store/storefront.html',
-                  {'watches': watches, }
+                  {'watches': watchList}
                   )
 
 
@@ -35,7 +47,6 @@ def signup(request, userType):
         FormType = ModeratorForm
     else:
         FormType = MerchantForm
-    signupForm = None
     if request.method == 'POST':
         signupForm = FormType(request.POST, request.FILES)
         if signupForm.is_valid():
@@ -43,14 +54,29 @@ def signup(request, userType):
             return redirect('store_front')
     else:
         signupForm = FormType()
-    return render(request, 'store/signup.html', {'signupForm': signupForm, 'userType': userType})
+        return render(request, 'store/signup.html', {'signupForm': signupForm, 'userType': userType})
 
 
 def product(request, productID):
-    form = ProductReviewForm()
-    theProduct = Product.objects.raw("SELECT * FROM store_product WHERE ID = %s", [productID])[0]
-    response = "You are looking at the product page for %s" % productID
-    return render(request, 'store/productPage.html', {'product': theProduct, 'reviewForm': form})
+    if request.method == 'POST':
+        form = ProductReviewForm(request.POST, request.FILES)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.Product_ID = Product.objects.get(pk = productID)
+            review.save()
+            return redirect('product_page', productID=productID)
+    else:
+        form = ProductReviewForm()
+        theProduct = Product.objects.raw("SELECT * FROM store_product WHERE ID = %s", [productID])[0]
+        productReviews = Product_Review.objects.raw("SELECT * FROM store_product_review WHERE Product_ID_id = %s ORDER BY id DESC", [productID])
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT AVG(Rating), COUNT(id) FROM store_product_review WHERE Product_ID_id = %s", [productID])
+            reviewStats = cursor.fetchone()
+        return render(request, 'store/productPage.html', {'product': theProduct,
+                                                          'avgRating': reviewStats[0],
+                                                          'reviewCount': reviewStats[1],
+                                                          'reviews': productReviews,
+                                                          'reviewForm': form})
 
 
 def merchant(request, merchantID):

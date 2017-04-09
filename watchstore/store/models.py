@@ -97,7 +97,7 @@ class Merchant_Review(models.Model):
     Feedback = models.TextField()
 
     def __str__(self):
-        return "%s %s" % (self.Merchant_Email, self.Cusomter_Email)
+        return "%s %s" % (self.Merchant_Email, self.Customer_Email)
 
 
 class Product_Review(models.Model):
@@ -114,7 +114,7 @@ class Product_Review(models.Model):
     Feedback = models.TextField()
 
     def __str__(self):
-        return "%s %s" % (self.Product_ID, self.Cusomter_Email)
+        return "%s %s" % (self.Product_ID, self.Customer_Email)
 
 
 class Cart(models.Model):
@@ -122,7 +122,7 @@ class Cart(models.Model):
     Product_ID = models.ManyToManyField(Product, blank=True)
 
     def __str__(self):
-        return "%s %d" % (self.Cusomter_Email, self.Product_ID)
+        return "%s %d" % (self.Customer_Email, self.Product_ID)
 
 
 class Friends(models.Model):
