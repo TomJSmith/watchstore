@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from store.forms import CustomerForm, ModeratorForm, MerchantForm, ProductReviewForm, MerchantReviewForm, LoginForm, \
-    AddToCart, ProductForm
-from store.models import Product, Product_Review, Merchant_Review, Customer, Cart, Merchant, Order
+    AddToCart, ProductForm, CreditForm
+from store.models import Product, Product_Review, Merchant_Review, Customer, Cart, Merchant, Order, Credit_Card
 from django.db import connection
 
 
@@ -279,15 +279,20 @@ def addCreditCard(request):
         return redirect('store_front')
     else:
         FormType = CreditForm
-        if request.method == 'POST':
-            creditCardForm = FormType(request.POST, request.FILES)
-            if creditCardForm.is_valid():
-                creditCardForm.save()
-                return redirect('store_front')
-            else:
-                creditCards = Credit_Card.objects.filter(CEmail=Customer.objects.get(pk=request.session['userName']))
-                return render(request, 'store/checkout.html', {'creditCardForm': creditCardForm, 'creditcard': creditCards})
-        
+        userType = request.session['userType']
+        if userType == 'customer':
+            if request.method == 'POST':
+                creditCardForm = FormType(request.POST, request.FILES)
+                if creditCardForm.is_valid():
+                    creditCardForm.save()
+                    return redirect('store_front')
+                else:
+                    creditCards = Credit_Card.objects.filter(CEmail=Customer.objects.get(pk=request.session['userName']))
+                    return render(request, 'store/checkout.html', {'creditCardForm': creditCardForm, 'creditcard': creditCards})
+        elif userType == 'moderator':
+            return redirect('store_front')
+        else:
+            return redirect('store_front')
         creditCardForm = FormType()
         creditCards = Credit_Card.objects.filter(CEmail=Customer.objects.get(pk=request.session['userName']))
         return render(request, 'store/checkout.html', {'creditCardForm': creditCardForm, 'creditcard': creditCards})
