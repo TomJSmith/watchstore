@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from store.forms import CustomerForm, ModeratorForm, MerchantForm, ProductReviewForm, MerchantReviewForm, LoginForm, AddToCart, ProductForm
+from store.forms import CustomerForm, ModeratorForm, MerchantForm, ProductReviewForm, MerchantReviewForm, LoginForm, \
+    AddToCart, ProductForm
 from store.models import Product, Product_Review, Merchant_Review, Customer, Cart, Merchant, Order
 from django.db import connection
 
@@ -123,10 +124,12 @@ def merchant(request, merchantID):
             return redirect('merchant_page', merchantID=merchantID)
     else:
         products = Product.objects.raw("SELECT * FROM store_product WHERE Seller_Email_id = %s", [merchantID])
-        reviews = Merchant_Review.objects.raw("SELECT * FROM store_merchant_review WHERE Merchant_Email_id = %s ORDER BY id DESC", [merchantID])
+        reviews = Merchant_Review.objects.raw(
+            "SELECT * FROM store_merchant_review WHERE Merchant_Email_id = %s ORDER BY id DESC", [merchantID])
         merchant = Merchant.objects.raw("SELECT * FROM store_merchant WHERE EMAIL = %s", [merchantID])[0]
         with connection.cursor() as cursor:
-            cursor.execute("SELECT COUNT(id), AVG(Rating) FROM store_merchant_review WHERE Merchant_Email_id = %s", [merchantID])
+            cursor.execute("SELECT COUNT(id), AVG(Rating) FROM store_merchant_review WHERE Merchant_Email_id = %s",
+                           [merchantID])
             reviewStats = cursor.fetchone()
         form = MerchantReviewForm()
         return render(request, 'store/merchantPage.html', {'reviewCount': reviewStats[0],
@@ -134,7 +137,7 @@ def merchant(request, merchantID):
                                                            'products': products,
                                                            'reviews': reviews,
                                                            'merchant': merchant,
-					    								   'reviewForm': form})
+                                                           'reviewForm': form})
 
 
 def user(request, userName):
@@ -180,7 +183,28 @@ def myCustomerAccount(request):
 
 
 def myModeratorAccount(request):
-    return render(request, 'store/myModeratorAccount.html')
+    if request.method == 'POST':
+        theMerchant = request.POST['merchant_email']
+        if request.POST['decision'] == 'approve':
+            approval = 'APP'
+        else:
+            approval = 'RJ'
+        with connection.cursor() as cursor:
+            cursor.execute("UPDATE store_merchant SET Status = %s, Reviewed_By_id = %s WHERE Email = %s",
+                           [approval, request.session['userName'], theMerchant])
+        return redirect('my_account')
+    else:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT Email, FName, LName, Resp_Level FROM store_moderator WHERE Email = %s",
+                           [request.session['userName']])
+            theMod = cursor.fetchone()
+            cursor.execute("SELECT Email, FName, LName, Banking_Info, Address FROM store_merchant WHERE Status='PD'")
+            pendingMerchants = cursor.fetchall()
+        return render(request, 'store/myModeratorAccount.html', {'email': theMod[0],
+                                                                 'fName': theMod[1],
+                                                                 'lName': theMod[2],
+                                                                 'responsibility': theMod[3],
+                                                                 'pendingMerchants': pendingMerchants})
 
 
 def myMerchantAccount(request):
