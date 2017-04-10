@@ -33,7 +33,7 @@
 {% endfor %}
 
 </div>
-{% if request.session.loggedIn %}
+{% if request.session.loggedIn and request.session.userType == 'customer'%}
 <form method="post" action=".">
     <h1>Leave a review</h1>
     {% csrf_token %}

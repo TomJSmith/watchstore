@@ -160,7 +160,7 @@ def myCustomerAccount(request):
 
 
 def myModeratorAccount(request):
-    pass
+    return render(request, 'store/myModeratorAccount.html')
 
 
 def myMerchantAccount(request):
