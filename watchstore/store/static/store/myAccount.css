@@ -1,4 +1,4 @@
-.accoutFrame {
+.accountFrame {
     margin: 40px 10%;
     padding: 30px;
     border-style: solid;
@@ -6,6 +6,10 @@
     border-color: lightgrey;
     border-radius: 4px;
     background-color: white;
+}
+
+.accountFrame h3 {
+    opacity: 0.7;
 }
 
 .accountSection {

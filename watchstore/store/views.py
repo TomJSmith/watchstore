@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from store.forms import CustomerForm, ModeratorForm, MerchantForm, ProductReviewForm, LoginForm, AddToCart
-from store.models import Product, Product_Review, Customer, Cart
+from store.forms import CustomerForm, ModeratorForm, MerchantForm, ProductReviewForm, LoginForm, AddToCart, ProductForm
+from store.models import Product, Product_Review, Customer, Cart, Merchant
 from django.db import connection
 
 
@@ -81,9 +81,6 @@ def product(request, productID):
                     cursor.execute("SELECT id FROM store_cart WHERE Customer_Email_id=%s", [request.session['userName']])
                     cartID = cursor.fetchone()[0]
                     cursor.execute("INSERT INTO store_cart_Product_ID (cart_id, product_id) VALUES (%s, %s)", [cartID, productID])
-                # userCart = Cart.objects.get(Customer_Email=Customer.objects.get(pk=request.session['userName']))
-                # theProduct = Product.objects.get(pk=productID)
-                # userCart.entry_set.add(theProduct)
                 return redirect('store_front')
             print(form.errors)
 
@@ -154,11 +151,32 @@ def myCustomerAccount(request):
                                                             'address': customer[4],
                                                             'cart': cart})
 
+
 def myModeratorAccount(request):
-    render(request, 'store/myModeratorAccount.html')
+    pass
+
 
 def myMerchantAccount(request):
-    render(request, 'store/myMerchantAccount.html')
+    if request.method == 'POST':
+        newProduct = ProductForm(request.POST, request.FILES)
+        if newProduct.is_valid():
+            newProduct = newProduct.save(commit=False)
+            newProduct.Seller_Email_id = Merchant.objects.get(pk=request.session['userName'])
+            newProduct.save()
+            return redirect('my_account')
+    else:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM store_merchant WHERE Email = %s", [request.session['userName']])
+            theMerchant = cursor.fetchone()
+        prodForm = ProductForm()
+        return render(request, 'store/myMerchantAccount.html', {'email': theMerchant[0],
+                                                            'fName': theMerchant[2],
+                                                            'lName': theMerchant[3],
+                                                            'bankingInfo': theMerchant[4],
+                                                            'address': theMerchant[5],
+                                                            'status': theMerchant[6],
+                                                            'form': prodForm})
+
 
 def myAccount(request):
     if not request.session['loggedIn']:

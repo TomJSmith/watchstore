@@ -5,5 +5,25 @@
 <link rel="stylesheet" type="text/css" href="{% static 'store/myAccount.css' %}"/>
 {% endblock %}
 
-{% block content %}}
+{% block content %}
+    <div class="accountFrame">
+        <h1>{{ fName }} {{ lName }}</h1>
+        <h3>{{ email }}</h3>
+        <h3>{{ address }}</h3>
+        {% if status == 'APP' %}
+            <h3>approved</h3>
+        {% elif status == 'PD' %}
+            <h3>pending</h3>
+        {% else %}
+            <h3>rejected</h3>
+        {% endif %}
+        <h3>{{ bankingInfo }}</h3>
+    </div>
+    {% if status == 'APP' %}
+        <form method="post" action="">
+            {{ form }}
+             {% csrf_token %}
+            <input class="button" type="submit" value="Create Listing">
+        </form>
+    {% endif %}
 {% endblock %}}

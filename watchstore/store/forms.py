@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from store.models import Customer, Moderator, Merchant, Product_Review, Cart
+from store.models import Customer, Moderator, Merchant, Product_Review, Cart, Product
 
 
 class LoginForm(forms.Form):
@@ -36,3 +36,9 @@ class ProductReviewForm(ModelForm):
     class Meta:
         model = Product_Review
         fields = ['Feedback', 'Rating']
+
+
+class ProductForm(ModelForm):
+    class Meta:
+        model = Product
+        fields = ['Name', 'Description', 'Price', 'Brand', 'Type', 'Compatibility', 'Image']

@@ -6,10 +6,13 @@
 {% endblock %}
 
 {% block content %}
-<div class="accoutFrame">
+<div class="accountFrame">
     <h1>{{ fName }} {{ lName }}</h1>
     <h3>{{ email }}</h3>
     <h3>{{ address }}</h3>
+    <div class="accountSection">
+        <h1>Friends</h1>
+    </div>
     <div class="accountSection">
         <h1>My Cart</h1>
         {% for prod in cart %}

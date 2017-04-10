@@ -15,10 +15,10 @@
         <h3>{{ product.Seller_Email }}</h3>
     </a>
     <p>{{ product.Description }}</p>
-    {% if request.session.loggedIn %}
+    {% if request.session.loggedIn and request.session.userType == 'customer' %}
         <form action="" method="post">
             {% csrf_token %}
-            <input name="cartButton" type="submit" value="Add to cart">
+            <input class="button" name="cartButton" type="submit" value="Add to cart">
         </form>
     {% endif %}
     {% if reviewCount > 0 %}

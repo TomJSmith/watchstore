@@ -92,8 +92,7 @@ class Order(models.Model):
 class Merchant_Review(models.Model):
     Merchant_Email = models.ForeignKey(Merchant, on_delete=models.CASCADE)
     Customer_Email = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    Rating = models.DecimalField(max_digits=2, decimal_places=1, validators=[MinValueValidator(0.0), MaxValueValidator(
-        5.0)])  # rating scheme stars, numbers, etc
+    Rating = models.DecimalField(max_digits=2, decimal_places=1, validators=[MinValueValidator(0.0), MaxValueValidator(5.0)])  # rating scheme stars, numbers, etc
     Feedback = models.TextField()
 
     def __str__(self):

@@ -72,6 +72,11 @@ form {
     border-radius: 4px;
 }
 
+
+form .button {
+    width: 100%;
+}
+
 form input{
     padding: 10px;
     width: 90%;
@@ -114,4 +119,5 @@ form select {
 form h1 {
     opacity: 0.7;
 }
+
 
