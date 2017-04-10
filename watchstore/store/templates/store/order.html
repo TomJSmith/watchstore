@@ -1,0 +1,27 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static 'store/order.css' %}"/>
+{% endblock %}
+
+{% block content %}
+<div class="orderFrame">
+    <h1>Order Number: {{ order.Order_Number }}</h1>
+    <h3>Placed By {{ order.Placed_By }}</h3>
+    <div class="billingSection">
+        <h2>${{ order.Total_Price }} billed to {{ order.Billing_Info }}</h2>
+    </div>
+	
+    <div class="productSection">
+        <h2>Products shipped to: {{ order.Shipping_Info }}</h2>
+        {% for prod in products %}
+            <a href="{% url 'product_page' prod.ID %}">
+                <h3 class="prodName">{{ prod.Name }}</h3>
+                <img class="productIcon" src="{{ prod.Image }}">
+                <h4 class="price">${{ prod.Price }}</h4>
+            </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}}

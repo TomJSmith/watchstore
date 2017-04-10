@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from store.forms import CustomerForm, ModeratorForm, MerchantForm, ProductReviewForm, LoginForm, AddToCart
-from store.models import Product, Product_Review, Customer, Cart
+from store.models import Product, Product_Review, Customer, Cart, Order
 from django.db import connection
 
 
@@ -148,11 +148,13 @@ def myCustomerAccount(request):
         cursor.execute("SELECT * FROM store_customer WHERE Email = %s", [request.session['userName']])
         customer = cursor.fetchone()
     cart = Cart.objects.get(Customer_Email=Customer.objects.get(pk=request.session['userName'])).Product_ID.all()
+    orders = Order.objects.filter(Placed_By=Customer.objects.get(pk=request.session['userName']))#.Order_Number.all()
     return render(request, 'store/myCustomerAccount.html', {'email': customer[0],
                                                             'fName': customer[2],
                                                             'lName': customer[3],
                                                             'address': customer[4],
-                                                            'cart': cart})
+                                                            'cart': cart,
+															'orders': orders})
 
 def myModeratorAccount(request):
     render(request, 'store/myModeratorAccount.html')
@@ -171,3 +173,21 @@ def myAccount(request):
             return myModeratorAccount(request)
         else:
             return myMerchantAccount(request)
+			
+def order(request, orderNumber):
+    if not request.session['loggedIn']:
+        return redirect('store_front')
+    else:
+        userType = request.session['userType']
+        if userType == 'customer':
+            order = Order.objects.get(Order_Number=orderNumber)
+            if request.session['userName'] != order.Placed_By.Email:               
+                return redirect('store_front')
+            else:
+                products = order.Product_ID.all()
+                return render(request, 'store/order.html', {'order': order,
+				                                            'products': products})
+        elif userType == 'moderator':
+            return redirect('store_front')
+        else:
+            return redirect('store_front')
