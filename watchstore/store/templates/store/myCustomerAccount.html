@@ -12,6 +12,13 @@
     <h3>{{ address }}</h3>
     <div class="accountSection">
         <h1>My Cart</h1>
+        {% for prod in cart %}
+            <a href="{% url 'product_page' prod.ID %}">
+                <h3 class="prodName">{{ prod.Name }}</h3>
+    {#            <img class="cartIcon" src="{{ prod.Image }}">#}
+                <h4 class="price">${{ prod.Price }}</h4>
+            </a>
+        {% endfor %}
     </div>
     <div class="accountSection">
         <h1>Past Orders</h1>

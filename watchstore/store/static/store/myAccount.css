@@ -15,3 +15,20 @@
     border-color: lightgrey;
     border-width: 1px 0 0 0;
 }
+
+.cartIcon {
+    height: 100px;
+    width: 100px;
+    object-fit: cover;
+}
+
+.price {
+    color: #FF3300;
+    margin-top: 0;
+    margin-bottom: 40px;
+}
+
+.prodName {
+    margin-bottom: 5px;
+    margin-top: 40px;
+}

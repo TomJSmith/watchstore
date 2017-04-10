@@ -147,11 +147,12 @@ def myCustomerAccount(request):
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM store_customer WHERE Email = %s", [request.session['userName']])
         customer = cursor.fetchone()
-        print(customer)
+    cart = Cart.objects.get(Customer_Email=Customer.objects.get(pk=request.session['userName'])).Product_ID.all()
     return render(request, 'store/myCustomerAccount.html', {'email': customer[0],
                                                             'fName': customer[2],
                                                             'lName': customer[3],
-                                                            'address': customer[4]})
+                                                            'address': customer[4],
+                                                            'cart': cart})
 
 def myModeratorAccount(request):
     render(request, 'store/myModeratorAccount.html')

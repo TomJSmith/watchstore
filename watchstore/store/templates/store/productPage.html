@@ -38,7 +38,7 @@
     <h1>Leave a review</h1>
     {% csrf_token %}
     {{ reviewForm }}
-    <input name="reviewButton" class="button" type="submit" value="Submit Review">
+    <input class="button" name="reviewButton" type="submit" value="Submit Review">
 </form>
 {% endif %}
 {% endblock %}
