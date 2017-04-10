@@ -123,7 +123,21 @@ def merchant(request, merchantID):
             review.save()
             return redirect('merchant_page', merchantID=merchantID)
     else:
-        products = Product.objects.raw("SELECT * FROM store_product WHERE Seller_Email_id = %s", [merchantID])
+        productList = []
+        with connection.cursor() as cursor:
+            cursor.execute(
+                'SELECT * FROM (SELECT p.ID, p.Image, p.Name, p.Seller_Email_id, p.Brand, p.Price, AVG(r.Rating), COUNT(r.id) FROM store_product p LEFT JOIN store_product_review r ON p.ID = r.Product_ID_id GROUP BY p.ID) WHERE Seller_Email_id = %s', [merchantID])
+            resultSet = cursor.fetchall()
+            for row in resultSet:
+                productList.append({'ID': row[0],
+                                  'Image': row[1],
+                                  'Name': row[2],
+                                  'Seller_Email': row[3],
+								  'Brand': row[4],
+                                  'Price': row[5],
+                                  'Rating': row[6],
+                                  'NumReviews': row[7]})
+#        products = Product.objects.raw("SELECT * FROM store_product WHERE Seller_Email_id = %s", [merchantID])
         reviews = Merchant_Review.objects.raw(
             "SELECT * FROM store_merchant_review WHERE Merchant_Email_id = %s ORDER BY id DESC", [merchantID])
         merchant = Merchant.objects.raw("SELECT * FROM store_merchant WHERE EMAIL = %s", [merchantID])[0]
@@ -132,11 +146,11 @@ def merchant(request, merchantID):
                            [merchantID])
             reviewStats = cursor.fetchone()
         form = MerchantReviewForm()
-        return render(request, 'store/merchantPage.html', {'reviewCount': reviewStats[0],
+        return render(request, 'store/merchantPage.html', {'merchant': merchant,
+                                                           'reviewCount': reviewStats[0],
                                                            'avgRating': reviewStats[1],
-                                                           'products': products,
+                                                           'products': productList,
                                                            'reviews': reviews,
-                                                           'merchant': merchant,
                                                            'reviewForm': form})
 
 

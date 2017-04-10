@@ -22,7 +22,10 @@
 					<div class="productDetails">
 						<div class="productName">{{product.Name}}</div><br />
 						<div class="productBrand">{{product.Brand}}<div><br />
-						<div class="productPrice">${{product.Price}}</div><br />					
+						<div class="productPrice">${{product.Price}}</div><br />
+						{% if product.NumReviews > 0 %}
+							<div class="productReviewScore">{{product.Rating|floatformat}}/5 ({{product.NumReviews}} reviews)</div>
+						{% endif %}						
 					</div>
 				</li>
             </a>
