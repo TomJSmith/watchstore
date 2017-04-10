@@ -1,11 +1,17 @@
 from django.forms import ModelForm
 from django import forms
-from store.models import Customer, Moderator, Merchant, Product_Review
+from store.models import Customer, Moderator, Merchant, Product_Review, Cart
 
 
 class LoginForm(forms.Form):
     username = forms.CharField(label="Username", max_length=100)
     password = forms.CharField(widget=forms.PasswordInput(), label="Password", max_length=100)
+
+
+class AddToCart(ModelForm):
+    class Meta:
+        model = Cart
+        fields = []
 
 
 class CustomerForm(ModelForm):
@@ -29,4 +35,4 @@ class MerchantForm(ModelForm):
 class ProductReviewForm(ModelForm):
     class Meta:
         model = Product_Review
-        fields = ['Feedback', 'Customer_Email', 'Rating']
+        fields = ['Feedback', 'Rating']

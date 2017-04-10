@@ -121,9 +121,6 @@ class Cart(models.Model):
     Customer_Email = models.ForeignKey(Customer, on_delete=models.CASCADE)
     Product_ID = models.ManyToManyField(Product, blank=True)
 
-    def __str__(self):
-        return "%s %d" % (self.Customer_Email, self.Product_ID)
-
 
 class Friends(models.Model):
     Friend_1 = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='f1')

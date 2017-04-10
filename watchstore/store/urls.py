@@ -12,5 +12,6 @@ urlpatterns = [
     url(r'^user/(?P<userName>.+)/$', views.user, name='user_profile'),
     url(r'^search/results/', views.results, name='search_results'),
     url(r'^search/', views.search, name='search'),
-    url(r'^logout/$', views.logout, name='logout')
+    url(r'^logout/$', views.logout, name='logout'),
+    url(r'^myAccount/$', views.myAccount, name='my_account')
 ]

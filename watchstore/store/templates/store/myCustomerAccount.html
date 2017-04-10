@@ -1,0 +1,20 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static 'store/myAccount.css' %}"/>
+{% endblock %}
+
+{% block content %}
+<div class="accoutFrame">
+    <h1>{{ fName }} {{ lName }}</h1>
+    <h3>{{ email }}</h3>
+    <h3>{{ address }}</h3>
+    <div class="accountSection">
+        <h1>My Cart</h1>
+    </div>
+    <div class="accountSection">
+        <h1>Past Orders</h1>
+    </div>
+</div>
+{% endblock %}}

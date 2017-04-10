@@ -1,14 +1,11 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from store.forms import CustomerForm, ModeratorForm, MerchantForm, ProductReviewForm, LoginForm
-from store.models import Product, Product_Review
+from store.forms import CustomerForm, ModeratorForm, MerchantForm, ProductReviewForm, LoginForm, AddToCart
+from store.models import Product, Product_Review, Customer, Cart
 from django.db import connection
 
 
 def storefront(request):
-    print(request.session['loggedIn'])
-    print(request.session['userName'])
-    print(request.session['userType'])
     watchList = []
     with connection.cursor() as cursor:
         cursor.execute('SELECT p.ID, p.Image, p.Name, p.Seller_Email_id, p.Price, AVG(r.Rating), COUNT(r.id) FROM store_product p LEFT JOIN store_product_review r ON p.ID = r.Product_ID_id GROUP BY p.ID')
@@ -67,6 +64,8 @@ def signup(request, userType):
         signupForm = FormType(request.POST, request.FILES)
         if signupForm.is_valid():
             signupForm.save()
+            if userType == "customer":
+                Cart.objects.create(Customer_Email=Customer.objects.get(pk=signupForm.cleaned_data['Email']))
             return redirect('store_front')
     else:
         signupForm = FormType()
@@ -75,12 +74,28 @@ def signup(request, userType):
 
 def product(request, productID):
     if request.method == 'POST':
-        form = ProductReviewForm(request.POST, request.FILES)
-        if form.is_valid():
-            review = form.save(commit=False)
-            review.Product_ID = Product.objects.get(pk = productID)
-            review.save()
-            return redirect('product_page', productID=productID)
+        if 'cartButton' in request.POST:
+            form = AddToCart(request.POST, request.FILES)
+            if form.is_valid():
+                with connection.cursor() as cursor:
+                    cursor.execute("SELECT id FROM store_cart WHERE Customer_Email_id=%s", [request.session['userName']])
+                    cartID = cursor.fetchone()[0]
+                    cursor.execute("INSERT INTO store_cart_Product_ID (cart_id, product_id) VALUES (%s, %s)", [cartID, productID])
+                # userCart = Cart.objects.get(Customer_Email=Customer.objects.get(pk=request.session['userName']))
+                # theProduct = Product.objects.get(pk=productID)
+                # userCart.entry_set.add(theProduct)
+                return redirect('store_front')
+            print(form.errors)
+
+        elif 'reviewButton' in request.POST:
+            print('reviewButton')
+            form = ProductReviewForm(request.POST, request.FILES)
+            if form.is_valid():
+                review = form.save(commit=False)
+                review.Product_ID = Product.objects.get(pk=productID)
+                review.Customer_Email = Customer.objects.get(pk=request.session['userName'])
+                review.save()
+                return redirect('product_page', productID=productID)
     else:
         form = ProductReviewForm()
         theProduct = Product.objects.raw("SELECT * FROM store_product WHERE ID = %s", [productID])[0]
@@ -126,3 +141,32 @@ def results(request):
             return HttpResponse("No search results")
     else:
         return redirect('store_front')
+
+
+def myCustomerAccount(request):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM store_customer WHERE Email = %s", [request.session['userName']])
+        customer = cursor.fetchone()
+        print(customer)
+    return render(request, 'store/myCustomerAccount.html', {'email': customer[0],
+                                                            'fName': customer[2],
+                                                            'lName': customer[3],
+                                                            'address': customer[4]})
+
+def myModeratorAccount(request):
+    render(request, 'store/myModeratorAccount.html')
+
+def myMerchantAccount(request):
+    render(request, 'store/myMerchantAccount.html')
+
+def myAccount(request):
+    if not request.session['loggedIn']:
+        return redirect('store_front')
+    else:
+        userType = request.session['userType']
+        if userType == 'customer':
+            return myCustomerAccount(request)
+        elif userType == 'moderator':
+            return myModeratorAccount(request)
+        else:
+            return myMerchantAccount(request)

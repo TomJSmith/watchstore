@@ -15,6 +15,12 @@
         <h3>{{ product.Seller_Email }}</h3>
     </a>
     <p>{{ product.Description }}</p>
+    {% if request.session.loggedIn %}
+        <form action="" method="post">
+            {% csrf_token %}
+            <input name="cartButton" type="submit" value="Add to cart">
+        </form>
+    {% endif %}
     {% if reviewCount > 0 %}
         <h3>{{ avgRating|floatformat }}/5 ({{ reviewCount }} review(s))</h3>
     {% endif %}
@@ -27,10 +33,12 @@
 {% endfor %}
 
 </div>
+{% if request.session.loggedIn %}
 <form method="post" action=".">
     <h1>Leave a review</h1>
     {% csrf_token %}
     {{ reviewForm }}
-    <input class="button" type="submit" value="Submit Review">
+    <input name="reviewButton" class="button" type="submit" value="Submit Review">
 </form>
+{% endif %}
 {% endblock %}

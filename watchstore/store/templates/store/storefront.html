@@ -8,7 +8,7 @@
 {% block content %}
     <ul class="productList">
     {% for product in watches %}
-        <a href="product/{{product.ID}}">
+        <a href="{% url 'product_page' product.ID %}">
             <li class="productListing">
                 <div class="iconContainer">
                     <img class="productIcon" src={{product.Image}}>
