@@ -1,14 +1,15 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from store.forms import CustomerForm, ModeratorForm, MerchantForm, ProductReviewForm, LoginForm, AddToCart, ProductForm
-from store.models import Product, Product_Review, Customer, Cart, Merchant
+from store.models import Product, Product_Review, Customer, Cart, Merchant, Order
 from django.db import connection
 
 
 def storefront(request):
     watchList = []
     with connection.cursor() as cursor:
-        cursor.execute('SELECT p.ID, p.Image, p.Name, p.Seller_Email_id, p.Price, AVG(r.Rating), COUNT(r.id) FROM store_product p LEFT JOIN store_product_review r ON p.ID = r.Product_ID_id GROUP BY p.ID')
+        cursor.execute(
+            'SELECT p.ID, p.Image, p.Name, p.Seller_Email_id, p.Price, AVG(r.Rating), COUNT(r.id) FROM store_product p LEFT JOIN store_product_review r ON p.ID = r.Product_ID_id GROUP BY p.ID')
         resultSet = cursor.fetchall()
         for row in resultSet:
             watchList.append({'ID': row[0],
@@ -78,9 +79,11 @@ def product(request, productID):
             form = AddToCart(request.POST, request.FILES)
             if form.is_valid():
                 with connection.cursor() as cursor:
-                    cursor.execute("SELECT id FROM store_cart WHERE Customer_Email_id=%s", [request.session['userName']])
+                    cursor.execute("SELECT id FROM store_cart WHERE Customer_Email_id=%s",
+                                   [request.session['userName']])
                     cartID = cursor.fetchone()[0]
-                    cursor.execute("INSERT INTO store_cart_Product_ID (cart_id, product_id) VALUES (%s, %s)", [cartID, productID])
+                    cursor.execute("INSERT INTO store_cart_Product_ID (cart_id, product_id) VALUES (%s, %s)",
+                                   [cartID, productID])
                 return redirect('store_front')
             print(form.errors)
 
@@ -96,9 +99,11 @@ def product(request, productID):
     else:
         form = ProductReviewForm()
         theProduct = Product.objects.raw("SELECT * FROM store_product WHERE ID = %s", [productID])[0]
-        productReviews = Product_Review.objects.raw("SELECT * FROM store_product_review WHERE Product_ID_id = %s ORDER BY id DESC", [productID])
+        productReviews = Product_Review.objects.raw(
+            "SELECT * FROM store_product_review WHERE Product_ID_id = %s ORDER BY id DESC", [productID])
         with connection.cursor() as cursor:
-            cursor.execute("SELECT AVG(Rating), COUNT(id) FROM store_product_review WHERE Product_ID_id = %s", [productID])
+            cursor.execute("SELECT AVG(Rating), COUNT(id) FROM store_product_review WHERE Product_ID_id = %s",
+                           [productID])
             reviewStats = cursor.fetchone()
         return render(request, 'store/productPage.html', {'product': theProduct,
                                                           'avgRating': reviewStats[0],
@@ -145,11 +150,13 @@ def myCustomerAccount(request):
         cursor.execute("SELECT * FROM store_customer WHERE Email = %s", [request.session['userName']])
         customer = cursor.fetchone()
     cart = Cart.objects.get(Customer_Email=Customer.objects.get(pk=request.session['userName'])).Product_ID.all()
+    orders = Order.objects.filter(Placed_By=Customer.objects.get(pk=request.session['userName']))  # .Order_Number.all()
     return render(request, 'store/myCustomerAccount.html', {'email': customer[0],
                                                             'fName': customer[2],
                                                             'lName': customer[3],
                                                             'address': customer[4],
-                                                            'cart': cart})
+                                                            'cart': cart,
+                                                            'orders': orders})
 
 
 def myModeratorAccount(request):
@@ -170,12 +177,12 @@ def myMerchantAccount(request):
             theMerchant = cursor.fetchone()
         prodForm = ProductForm()
         return render(request, 'store/myMerchantAccount.html', {'email': theMerchant[0],
-                                                            'fName': theMerchant[2],
-                                                            'lName': theMerchant[3],
-                                                            'bankingInfo': theMerchant[4],
-                                                            'address': theMerchant[5],
-                                                            'status': theMerchant[6],
-                                                            'form': prodForm})
+                                                                'fName': theMerchant[2],
+                                                                'lName': theMerchant[3],
+                                                                'bankingInfo': theMerchant[4],
+                                                                'address': theMerchant[5],
+                                                                'status': theMerchant[6],
+                                                                'form': prodForm})
 
 
 def myAccount(request):
@@ -189,3 +196,22 @@ def myAccount(request):
             return myModeratorAccount(request)
         else:
             return myMerchantAccount(request)
+
+
+def order(request, orderNumber):
+    if not request.session['loggedIn']:
+        return redirect('store_front')
+    else:
+        userType = request.session['userType']
+        if userType == 'customer':
+            anOrder = Order.objects.get(Order_Number=orderNumber)
+            if request.session['userName'] != anOrder.Placed_By.Email:
+                return redirect('store_front')
+            else:
+                products = anOrder.Product_ID.all()
+                return render(request, 'store/order.html', {'order': anOrder,
+                                                            'products': products})
+        elif userType == 'moderator':
+            return redirect('store_front')
+        else:
+            return redirect('store_front')
