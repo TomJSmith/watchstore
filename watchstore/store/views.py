@@ -141,8 +141,11 @@ def merchant(request, merchantID):
 
 
 def user(request, userName):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT FName, LName, Email FROM store_customer WHERE Email = %s", [userName])
+        theCustomer = cursor.fetchone()
     response = "user page for user %s" % userName
-    return HttpResponse(response)
+    return render(request, 'store/customerPage.html', {'customer': theCustomer})
 
 
 def search(request):

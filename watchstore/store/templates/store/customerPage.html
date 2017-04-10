@@ -1,10 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static 'store/customerPage.css' %}"/>
+{% endblock %}
+
+{% block content %}
+    <div class="accountFrame">
+        <h1>{{ customer.0 }} {{ customer.1 }}</h1>
+        <h3>{{ customer.2 }}</h3>
+        <ul class="friendsList accountSection">
+            <h2>Friends</h2>
+
+        </ul>
+    </div>
+{% endblock %}
