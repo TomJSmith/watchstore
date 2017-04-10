@@ -6,9 +6,12 @@ from django.db import connection
 
 
 def storefront(request):
-    print(request.session['loggedIn'])
-    print(request.session['userName'])
-    print(request.session['userType'])
+    try: 
+        print(request.session['loggedIn'])
+        print(request.session['userName'])
+        print(request.session['userType'])
+    except KeyError:
+        print("No session info")
     watchList = []
     with connection.cursor() as cursor:
         cursor.execute('SELECT p.ID, p.Image, p.Name, p.Seller_Email_id, p.Price, AVG(r.Rating), COUNT(r.id) FROM store_product p LEFT JOIN store_product_review r ON p.ID = r.Product_ID_id GROUP BY p.ID')
