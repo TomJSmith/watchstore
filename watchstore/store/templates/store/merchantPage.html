@@ -1,0 +1,55 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static 'store/merchantPage.css' %}"/>
+{% endblock %}
+
+{% block content %}
+<div class="basicFrame">
+    <h1>{{ merchant.Email }}'s Merchant Profile</h1>
+	{% if reviewCount > 0 %}
+	    <h2>Average Seller Rating: {{ avgRating|floatformat }}/5</h2>
+    {% endif %}
+    <ul class="sectionContainer">
+        <h3> {{ merchant.Email }}'s Listings</h3>
+        {% for product in products %}
+            <a href="{% url 'product_page' product.ID %}">
+				<li class="productListing">
+					<div class="iconContainer">
+						<img class="productIcon" src={{product.Image}}>
+					</div>
+					<div class="productDetails">
+						<div class="productName">{{product.Name}}</div><br />
+						<div class="productBrand">{{product.Brand}}<div><br />
+						<div class="productPrice">${{product.Price}}</div><br />					
+					</div>
+				</li>
+            </a>
+        {% endfor %}
+    </ul>
+	
+	<ul class="sectionContainer">
+		<h3> {{ merchant.Email }}'s Reviews</h3>
+		{% for review in reviews %}
+			<li class="review">
+				<h5>{{ review.Customer_Email }}</h5>
+				<p>{{ review.Feedback }}</p>
+				<h4>{{ review.Rating }}/5</h4>
+				<br />
+			</li>
+		{% endfor %}
+	</ul>
+			
+	</div>
+	{% if request.session.loggedIn and request.session.userType == 'customer'%}
+	<form method="post" action=".">
+		<h1>Leave a review</h1>
+		{% csrf_token %}
+		{{ reviewForm }}
+		<input class="button" name="reviewButton" type="submit" value="Submit Review">
+	</form>
+	{% endif %}
+
+
+{% endblock %}

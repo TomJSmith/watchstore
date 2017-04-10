@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from store.forms import CustomerForm, ModeratorForm, MerchantForm, ProductReviewForm, LoginForm, AddToCart, ProductForm
-from store.models import Product, Product_Review, Customer, Cart, Merchant, Order
+from store.forms import CustomerForm, ModeratorForm, MerchantForm, ProductReviewForm, MerchantReviewForm, LoginForm, AddToCart, ProductForm
+from store.models import Product, Product_Review, Merchant_Review, Customer, Cart, Merchant, Order
 from django.db import connection
 
 
@@ -113,8 +113,28 @@ def product(request, productID):
 
 
 def merchant(request, merchantID):
-    print(merchantID)
-    return HttpResponse("merchant page for merchant " + merchantID)
+    if request.method == 'POST':
+        form = MerchantReviewForm(request.POST, request.FILES)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.Merchant_Email = Merchant.objects.get(pk=merchantID)
+            review.Customer_Email = Customer.objects.get(pk=request.session['userName'])
+            review.save()
+            return redirect('merchant_page', merchantID=merchantID)
+    else:
+        products = Product.objects.raw("SELECT * FROM store_product WHERE Seller_Email_id = %s", [merchantID])
+        reviews = Merchant_Review.objects.raw("SELECT * FROM store_merchant_review WHERE Merchant_Email_id = %s ORDER BY id DESC", [merchantID])
+        merchant = Merchant.objects.raw("SELECT * FROM store_merchant WHERE EMAIL = %s", [merchantID])[0]
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT COUNT(id), AVG(Rating) FROM store_merchant_review WHERE Merchant_Email_id = %s", [merchantID])
+            reviewStats = cursor.fetchone()
+        form = MerchantReviewForm()
+        return render(request, 'store/merchantPage.html', {'reviewCount': reviewStats[0],
+                                                           'avgRating': reviewStats[1],
+                                                           'products': products,
+                                                           'reviews': reviews,
+                                                           'merchant': merchant,
+					    								   'reviewForm': form})
 
 
 def user(request, userName):
