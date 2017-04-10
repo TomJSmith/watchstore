@@ -273,3 +273,23 @@ def order(request, orderNumber):
             return redirect('store_front')
         else:
             return redirect('store_front')
+            
+def addCreditCard(request):
+    if not request.session['loggedIn']:
+        return redirect('store_front')
+    else:
+        FormType = CreditForm
+        if request.method == 'POST':
+            creditCardForm = FormType(request.POST, request.FILES)
+            if creditCardForm.is_valid():
+                creditCardForm.save()
+                return redirect('store_front')
+            else:
+                creditCards = Credit_Card.objects.filter(CEmail=Customer.objects.get(pk=request.session['userName']))
+                return render(request, 'store/checkout.html', {'creditCardForm': creditCardForm, 'creditcard': creditCards})
+        
+        creditCardForm = FormType()
+        creditCards = Credit_Card.objects.filter(CEmail=Customer.objects.get(pk=request.session['userName']))
+        return render(request, 'store/checkout.html', {'creditCardForm': creditCardForm, 'creditcard': creditCards})
+        
+
