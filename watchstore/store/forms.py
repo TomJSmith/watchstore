@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from store.models import Customer, Moderator, Merchant, Product_Review, Merchant_Review, Cart, Product
+from store.models import Customer, Moderator, Merchant, Product_Review, Merchant_Review, Cart, Product, Credit_Card
 
 
 class LoginForm(forms.Form):
@@ -47,3 +47,8 @@ class ProductForm(ModelForm):
     class Meta:
         model = Product
         fields = ['Name', 'Description', 'Price', 'Brand', 'Type', 'Compatibility', 'Image']
+
+class CreditForm(ModelForm):
+    class Meta:
+        model = Credit_Card
+        fields = ['Number', 'FName', 'LName', 'Expiry_Date', 'Security_Code', 'CEmail']

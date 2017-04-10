@@ -71,3 +71,8 @@
     color: #FF3300;
     font-size: large;
 }
+
+.productReviewScore {
+    opacity: .8;
+    font-size: small;
+}

@@ -14,5 +14,6 @@ urlpatterns = [
     url(r'^search/$', views.search, name='search'),
     url(r'^logout/$', views.logout, name='logout'),
 	url(r'^myAccount/orders/(?P<orderNumber>.+)/$', views.order, name='order_page'),
+    url(r'^myAccount/checkout/$', views.addCreditCard, name='checkout_page'),
     url(r'^myAccount/$', views.myAccount, name='my_account')
 ]
