@@ -18,7 +18,8 @@ class Credit_Card(models.Model):
     Number = models.IntegerField('Credit Card Number', primary_key=True)
     FName = models.CharField('First Name', max_length=50)
     LName = models.CharField('Last Name', max_length=50)
-    Expiry_Date = models.DateField('Date (m/y)')  # how to change datefield format or use something else
+    ExpiryMonth = models.IntegerField('Expiration Month')
+    ExpiryYear = models.IntegerField('Expiration Year')
     Security_Code = models.IntegerField()
     CEmail = models.ForeignKey(Customer, on_delete=models.CASCADE)
 

@@ -313,6 +313,7 @@ def addCreditCard(request):
             creditCardForm = FormType(request.POST, request.FILES)
             if 'add' in request.POST:
                 if creditCardForm.is_valid():
+                    creditCardForm.CEmail = request.session['userName']
                     creditCardForm.save()
                     creditCardForm = FormType()
                     creditCards = Credit_Card.objects.filter(CEmail=Customer.objects.get(pk=request.session['userName']))
@@ -322,7 +323,8 @@ def addCreditCard(request):
         creditCardForm = FormType()
         creditCards = Credit_Card.objects.filter(CEmail=Customer.objects.get(pk=request.session['userName']))
         return render(request, 'store/checkout.html', {'creditCardForm': creditCardForm, 'creditcard': creditCards})
-        
+
+
 def orderInfo(request):
     if not request.session['loggedIn']:
         return redirect('store_front')

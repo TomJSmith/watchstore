@@ -51,7 +51,7 @@ class ProductForm(ModelForm):
 class CreditForm(ModelForm):
     class Meta:
         model = Credit_Card
-        fields = ['Number', 'FName', 'LName', 'Expiry_Date', 'Security_Code', 'CEmail']
+        fields = ['Number', 'FName', 'LName', 'ExpiryMonth', 'ExpiryYear', 'Security_Code']
         
 class OrderForm(ModelForm):
     class Meta:
