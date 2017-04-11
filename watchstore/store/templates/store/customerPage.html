@@ -23,7 +23,7 @@
         </form>
         {% endif %}
         <ul class="friendsList accountSection">
-            <h2>{{ customer.1 }} is watching:</h2>
+            <h2>{{ customer.0 }} is watching:</h2>
             {% for friend in friendsList %}
                 <li>
                     <a href="{% url 'user_profile' friend.0 %}">

@@ -12,7 +12,7 @@
     <h3>{{ address }}</h3>
     <div class="accountSection">
         <ul class="friendsList">
-            <h1>Watching</h1>
+            <h1>You are watching:</h1>
             {% for friend in friendsList %}
                 <li>
                     <a href="{% url 'user_profile' friend.0 %}">
