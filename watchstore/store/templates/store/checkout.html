@@ -11,14 +11,17 @@
     <h1>Add Credit Card</h1>
     {% csrf_token %}
     {{ creditCardForm }}
-    <input class="button" type="submit" value="Add Credit Card">
+    <input class="button" name="add" type="submit" value="Add Credit Card">
 </form>
 
-<div class="ccFrame">
+<form method="post" action="/store/myAccount/checkout/orderInfo/">
     <h1>Select Credit Card</h1>
+    {% csrf_token %}
     {% for cc in creditcard %}
         <h3 class="name"> {{ cc.FName }} {{ cc.LName }}</h3>
         <h4 class="ccNumber"> {{ cc.Number }} </h4>
+        <input type="radio" name="choice" id="cc{{ forloop.counter }}" value="{{ cc.id }}" />
     {% endfor %}
-</div>
+    <input class="button" name="select" type="submit" value="Select Credit Card">
+</form>
 {% endblock %}}

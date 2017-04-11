@@ -1,0 +1,16 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" href="{% static 'store/orderInfo.css' %}"/>
+{% endblock %}
+
+{% block content %}
+
+<form method="post" action="">
+    <h1>Enter Order Info</h1>
+    {% csrf_token %}
+    {{ orderForm }}
+    <input class="button" name="add" type="submit" value="Enter">
+</form>
+{% endblock %}}
