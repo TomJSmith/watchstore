@@ -313,8 +313,14 @@ def addCreditCard(request):
             creditCardForm = FormType(request.POST, request.FILES)
             if 'add' in request.POST:
                 if creditCardForm.is_valid():
-                    creditCardForm.CEmail = request.session['userName']
-                    creditCardForm.save()
+                    ccNum = creditCardForm.cleaned_data['Number']
+                    exMonth = creditCardForm.cleaned_data['ExpiryMonth']
+                    exYear = creditCardForm.cleaned_data['ExpiryYear']
+                    lName = creditCardForm.cleaned_data['LName']
+                    fName = creditCardForm.cleaned_data['FName']
+                    securityCode = creditCardForm.cleaned_data['Security_Code']
+                    with connection.cursor() as cursor:
+                        cursor.execute("INSERT INTO store_credit_card (Number, FName, LName, ExpiryMonth, ExpiryYear, Security_Code, CEmail_id) VALUES (%s, %s, %s, %s, %s, %s, %s)", [ccNum, fName, lName, exMonth, exYear, securityCode, request.session['userName']])
                     creditCardForm = FormType()
                     creditCards = Credit_Card.objects.filter(CEmail=Customer.objects.get(pk=request.session['userName']))
                     return render(request, 'store/checkout.html', {'creditCardForm': creditCardForm, 'creditcard': creditCards})

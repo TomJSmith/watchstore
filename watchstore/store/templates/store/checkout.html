@@ -11,6 +11,7 @@
     <h1>Add Credit Card</h1>
     {% csrf_token %}
     {{ creditCardForm }}
+    <input type="hidden" name="CEmail" value="{{ request.session.userName }}">
     <input class="button" name="add" type="submit" value="Add Credit Card">
 </form>
 
