@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from store.forms import CustomerForm, ModeratorForm, MerchantForm, ProductReviewForm, MerchantReviewForm, LoginForm, \
-    AddToCart, ProductForm, CreditForm
+    AddToCart, ProductForm, OrderForm, CreditForm
 from store.models import Product, Product_Review, Merchant_Review, Customer, Cart, Merchant, Order, Credit_Card
 from django.db import connection
 
@@ -324,4 +324,15 @@ def addCreditCard(request):
         return render(request, 'store/checkout.html', {'creditCardForm': creditCardForm, 'creditcard': creditCards})
         
 def orderInfo(request):
-    return HttpResponse("HELLO")
+    if not request.session['loggedIn']:
+        return redirect('store_front')
+    else:
+        FormType = OrderForm
+        if request.method == 'POST':
+            orderInfoForm = FormType(request.POST, request.FILES)
+            if orderInfoForm.is_valid():
+                orderInfoForm.save()
+                orderInfoForm = FormType()
+                return render(request, 'store/orderInfo.html', {'orderForm': orderInfoForm})
+        orderInfoForm = FormType()
+        return render(request, 'store/orderInfo.html', {'orderForm': orderInfoForm})
