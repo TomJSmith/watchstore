@@ -47,7 +47,7 @@
 		
 		{% for order in orders %}
             <a href="{% url 'order_page' order.Order_Number %}">
-                <h3 class="prodName">{{ order.Order_Number }} - {{ order.Total_Price }}</h3>
+                <h3 class="prodName">{{ order.Order_Number }} - ${{ order.Total_Price }}</h3>
                 <h4 class="price">{{ order.Shipping_Info }}</h4>
             </a>
         {% endfor %}
