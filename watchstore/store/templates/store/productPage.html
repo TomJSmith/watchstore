@@ -19,7 +19,7 @@
         {% if inCart %}
             <h4>This item is in your cart</h4>
         {% else %}
-        <form action="" method="post">
+        <form class="addToCart" action="" method="post">
             {% csrf_token %}
             <input class="button" name="cartButton" type="submit" value="Add to cart">
         </form>

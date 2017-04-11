@@ -30,6 +30,11 @@
                 <h3 class="prodName">{{ prod.Name }}</h3>
     {#            <img class="cartIcon" src="{{ prod.Image }}">#}
                 <h4 class="price">${{ prod.Price }}</h4>
+                <form class="removeFromCart" action="" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="prodID" value="{{ prod.ID }}">
+                    <input class="button" type="submit" value="remove from cart">
+                </form>
             </a>
         {% endfor %}
         <form method="post" action="/store/myAccount/checkout/">

@@ -213,22 +213,30 @@ def results(request):
 
 
 def myCustomerAccount(request):
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM store_customer WHERE Email = %s", [request.session['userName']])
-        customer = cursor.fetchone()
-        cursor.execute(
-            "SELECT Friend_2_id, FName, LName FROM store_friends, store_customer WHERE Friend_2_id=Email AND Friend_1_id=%s",
-            [request.session['userName']])
-        friends = cursor.fetchall()
-    cart = Cart.objects.get(Customer_Email=Customer.objects.get(pk=request.session['userName'])).Product_ID.all()
-    orders = Order.objects.filter(Placed_By=Customer.objects.get(pk=request.session['userName']))  # .Order_Number.all()
-    return render(request, 'store/myCustomerAccount.html', {'email': customer[0],
-                                                            'fName': customer[2],
-                                                            'lName': customer[3],
-                                                            'address': customer[4],
-                                                            'cart': cart,
-                                                            'orders': orders,
-                                                            'friendsList': friends})
+    if request.method == 'POST':
+        with connection.cursor() as cursor:
+            prodID = int(request.POST['prodID'])
+            myCart = Cart.objects.get(Customer_Email=Customer.objects.get(pk=request.session['userName']))
+            myCart.Product_ID.remove(prodID)
+            myCart.save()
+            return redirect('my_account')
+    else:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM store_customer WHERE Email = %s", [request.session['userName']])
+            customer = cursor.fetchone()
+            cursor.execute(
+                "SELECT Friend_2_id, FName, LName FROM store_friends, store_customer WHERE Friend_2_id=Email AND Friend_1_id=%s",
+                [request.session['userName']])
+            friends = cursor.fetchall()
+        cart = Cart.objects.get(Customer_Email=Customer.objects.get(pk=request.session['userName'])).Product_ID.all()
+        orders = Order.objects.filter(Placed_By=Customer.objects.get(pk=request.session['userName']))  # .Order_Number.all()
+        return render(request, 'store/myCustomerAccount.html', {'email': customer[0],
+                                                                'fName': customer[2],
+                                                                'lName': customer[3],
+                                                                'address': customer[4],
+                                                                'cart': cart,
+                                                                'orders': orders,
+                                                                'friendsList': friends})
 
 
 def myModeratorAccount(request):
