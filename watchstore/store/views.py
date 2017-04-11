@@ -335,6 +335,9 @@ def orderInfo(request):
             if orderInfoForm.is_valid():
                 orderInfoForm.save()
                 orderInfoForm = FormType()
-                return render(request, 'store/orderInfo.html', {'orderForm': orderInfoForm})
+                ordNumber = Order.objects.latest('Placed_By')
+                ordNum = getattr(ordNumber, 'Order_Number')
+                return order(request, ordNum)
+                #return render(request, 'store/orderInfo.html', {'orderForm': orderInfoForm})
         orderInfoForm = FormType()
         return render(request, 'store/orderInfo.html', {'orderForm': orderInfoForm})

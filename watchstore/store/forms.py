@@ -56,4 +56,4 @@ class CreditForm(ModelForm):
 class OrderForm(ModelForm):
     class Meta:
         model = Order
-        fields = ['Shipping_Info', 'Billing_Info', 'Placed_By', 'Product_ID']
+        fields = ['Total_Price', 'Shipping_Info', 'Billing_Info', 'Placed_By', 'Product_ID']
