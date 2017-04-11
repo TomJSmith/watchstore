@@ -6,11 +6,23 @@
 {% endblock %}
 
 {% block content %}
+<div class="orderFrame">
+    <h1>Order Summary</h1>
+{% for item in cartItems %}
+    <div class="orderItem">
+        <h2>{{ item.0 }}</h2>
+        <h3>${{ item.1 }}</h3>
+    </div>
+{% endfor %}
+    <h2>Total Price:${{ total }}</h2>
+    <h2>Credit Card</h2>
+    <h4>{{ creditCard }}</h4>
 
-<form method="post" action="">
-    <h1>Enter Order Info</h1>
-    {% csrf_token %}
-    {{ orderForm }}
-    <input class="button" type="submit" value="Enter">
-</form>
+    <form method="post" action="">
+        {% csrf_token %}
+        <label>Shipping Address</label>
+        <input type="text" name="shippingAddress" value="{{ shippingAddress }}">
+        <input type="submit" name="placeOrder" class="button" value="Place Order">
+    </form>
+</div>
 {% endblock %}}

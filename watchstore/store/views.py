@@ -320,30 +320,56 @@ def addCreditCard(request):
                     fName = creditCardForm.cleaned_data['FName']
                     securityCode = creditCardForm.cleaned_data['Security_Code']
                     with connection.cursor() as cursor:
-                        cursor.execute("INSERT INTO store_credit_card (Number, FName, LName, ExpiryMonth, ExpiryYear, Security_Code, CEmail_id) VALUES (%s, %s, %s, %s, %s, %s, %s)", [ccNum, fName, lName, exMonth, exYear, securityCode, request.session['userName']])
+                        cursor.execute(
+                            "INSERT INTO store_credit_card (Number, FName, LName, ExpiryMonth, ExpiryYear, Security_Code, CEmail_id) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                            [ccNum, fName, lName, exMonth, exYear, securityCode, request.session['userName']])
                     creditCardForm = FormType()
-                    creditCards = Credit_Card.objects.filter(CEmail=Customer.objects.get(pk=request.session['userName']))
-                    return render(request, 'store/checkout.html', {'creditCardForm': creditCardForm, 'creditcard': creditCards})
+                    creditCards = Credit_Card.objects.filter(
+                        CEmail=Customer.objects.get(pk=request.session['userName']))
+                    return render(request, 'store/checkout.html',
+                                  {'creditCardForm': creditCardForm, 'creditcard': creditCards})
             elif 'select' in request.POST:
-                return orderInfo(request)
+                ccNum = request.POST['creditCardSelection']
+                print(ccNum)
+                request.session['ccNum'] = ccNum
+                return redirect('order_finalization')
         creditCardForm = FormType()
         creditCards = Credit_Card.objects.filter(CEmail=Customer.objects.get(pk=request.session['userName']))
+        print('render checkout')
         return render(request, 'store/checkout.html', {'creditCardForm': creditCardForm, 'creditcard': creditCards})
 
 
 def orderInfo(request):
+    print(request.POST)
     if not request.session['loggedIn']:
         return redirect('store_front')
     else:
-        FormType = OrderForm
-        if request.method == 'POST':
-            orderInfoForm = FormType(request.POST, request.FILES)
-            if orderInfoForm.is_valid():
-                orderInfoForm.save()
-                orderInfoForm = FormType()
-                ordNumber = Order.objects.latest('Placed_By')
-                ordNum = getattr(ordNumber, 'Order_Number')
-                return order(request, ordNum)
-                #return render(request, 'store/orderInfo.html', {'orderForm': orderInfoForm})
-        orderInfoForm = FormType()
-        return render(request, 'store/orderInfo.html', {'orderForm': orderInfoForm})
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT p.Name, p.Price, p.ID FROM store_product p, store_cart c, store_cart_Product_ID cp WHERE c.Customer_Email_id=%s AND c.id = cp.cart_id AND cp.product_id = p.id",
+                [request.session['userName']])
+            cartItems = cursor.fetchall()
+            cursor.execute(
+                "SELECT SUM(p.Price) FROM store_product p, store_cart c, store_cart_Product_ID cp WHERE c.Customer_Email_id=%s AND c.id = cp.cart_id AND cp.product_id = p.id",
+                [request.session['userName']])
+            totalPrice = cursor.fetchone()[0]
+            cursor.execute("SELECT Address FROM store_customer WHERE Email = %s", [request.session['userName']])
+            address = cursor.fetchone()[0]
+        if request.method == 'POST' and 'placeOrder' in request.POST:
+            print('working')
+            newOrder = Order()
+            newOrder.Total_Price = totalPrice
+            newOrder.Shipping_Info = request.POST['shippingAddress']
+            newOrder.Billing_Info = request.session['ccNum']
+            request.session['ccNum'] = None
+            newOrder.Placed_By = Customer.objects.get(pk=request.session['userName'])
+            newOrder.save()
+            for item in cartItems:
+                newOrder.Product_ID.add(item[2])
+            myCart = Cart.objects.get(Customer_Email=request.session['userName'])
+            myCart.Product_ID.clear()
+            return order(request, newOrder.Order_Number)
+        return render(request, 'store/orderInfo.html', {'cartItems': cartItems,
+                                                        'total': totalPrice,
+                                                        'shippingAddress': address,
+                                                        'creditCard': request.session['ccNum']})

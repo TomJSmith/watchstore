@@ -15,14 +15,15 @@
     <input class="button" name="add" type="submit" value="Add Credit Card">
 </form>
 
-<form method="post" action="/store/myAccount/orderInfo/">
+<form method="post" action="">
     <h1>Select Credit Card</h1>
     {% csrf_token %}
+    <select name="creditCardSelection">
     {% for cc in creditcard %}
-        <h3 class="name"> {{ cc.FName }} {{ cc.LName }}</h3>
-        <h4 class="ccNumber"> {{ cc.Number }} </h4>
-        <input type="radio" name="choice" id="cc{{ forloop.counter }}" value="{{ cc.id }}" />
+        <option value="{{ cc.Number }}">{{ cc.Number }}</option>
     {% endfor %}
+    <option value="test">test</option>
+    </select>
     <input class="button" name="select" type="submit" value="Select Credit Card">
 </form>
 {% endblock %}}
