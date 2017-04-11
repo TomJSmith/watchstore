@@ -309,22 +309,19 @@ def addCreditCard(request):
         return redirect('store_front')
     else:
         FormType = CreditForm
-        userType = request.session['userType']
-        if userType == 'customer':
-            if request.method == 'POST':
-                creditCardForm = FormType(request.POST, request.FILES)
+        if request.method == 'POST':
+            creditCardForm = FormType(request.POST, request.FILES)
+            if 'add' in request.POST:
                 if creditCardForm.is_valid():
                     creditCardForm.save()
-                    return redirect('store_front')
-                else:
-                    creditCards = Credit_Card.objects.filter(
-                        CEmail=Customer.objects.get(pk=request.session['userName']))
-                    return render(request, 'store/checkout.html',
-                                  {'creditCardForm': creditCardForm, 'creditcard': creditCards})
-        elif userType == 'moderator':
-            return redirect('store_front')
-        else:
-            return redirect('store_front')
+                    creditCardForm = FormType()
+                    creditCards = Credit_Card.objects.filter(CEmail=Customer.objects.get(pk=request.session['userName']))
+                    return render(request, 'store/checkout.html', {'creditCardForm': creditCardForm, 'creditcard': creditCards})
+            elif 'select' in request.POST:
+                return orderInfo(request)
         creditCardForm = FormType()
         creditCards = Credit_Card.objects.filter(CEmail=Customer.objects.get(pk=request.session['userName']))
         return render(request, 'store/checkout.html', {'creditCardForm': creditCardForm, 'creditcard': creditCards})
+        
+def orderInfo(request):
+    return HttpResponse("HELLO")

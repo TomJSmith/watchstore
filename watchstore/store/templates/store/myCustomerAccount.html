@@ -32,6 +32,10 @@
                 <h4 class="price">${{ prod.Price }}</h4>
             </a>
         {% endfor %}
+        <form method="post" action="/store/myAccount/checkout/">
+            {% csrf_token %}
+            <input class="button" type="submit" value="Checkout">
+        </form>
     </div>
     <div class="accountSection">
         <h1>Past Orders</h1>
