@@ -7,6 +7,11 @@ from django.db import connection
 
 
 def storefront(request):
+    if 'userName' not in request.session:
+        request.session['userName'] = None
+    if 'loggedIn' not in request.session:
+        request.session['loggedIn'] = False
+
     watchList = []
     with connection.cursor() as cursor:
         cursor.execute(
@@ -76,9 +81,11 @@ def signup(request, userType):
 
 def product(request, productID):
     with connection.cursor() as cursor:
-        cursor.execute("SELECT id FROM store_cart WHERE Customer_Email_id=%s",
-                       [request.session['userName']])
-        cartID = cursor.fetchone()[0]
+        cartID = ''
+        if request.session['userName']:
+            cursor.execute("SELECT id FROM store_cart WHERE Customer_Email_id=%s",
+                           [request.session['userName']])
+            cartID = cursor.fetchone()[0]
     if request.method == 'POST':
         if 'cartButton' in request.POST:
             form = AddToCart(request.POST, request.FILES)
