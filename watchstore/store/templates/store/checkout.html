@@ -15,7 +15,7 @@
     <input class="button" name="add" type="submit" value="Add Credit Card">
 </form>
 
-<form method="post" action="/store/myAccount/checkout/orderInfo/">
+<form method="post" action="/store/myAccount/orderInfo/">
     <h1>Select Credit Card</h1>
     {% csrf_token %}
     {% for cc in creditcard %}
