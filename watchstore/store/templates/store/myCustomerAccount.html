@@ -11,7 +11,17 @@
     <h3>{{ email }}</h3>
     <h3>{{ address }}</h3>
     <div class="accountSection">
-        <h1>Friends</h1>
+        <ul class="friendsList">
+            <h1>Watching</h1>
+            {% for friend in friendsList %}
+                <li>
+                    <a href="{% url 'user_profile' friend.0 %}">
+                        <h3>{{ friend.1 }} {{ friend.2 }}</h3>
+                        <h4>{{ friend.0 }}</h4>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
     </div>
     <div class="accountSection">
         <h1>My Cart</h1>

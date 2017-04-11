@@ -19,3 +19,26 @@
     border-color: lightgrey;
     border-width: 1px 0 0 0;
 }
+
+.friendsList h3 {
+    margin-bottom: 5px;
+}
+
+.friendsList h4{
+    margin-top: 5px;
+    opacity: 0.6;
+}
+
+.friendsList li {
+    margin: 40px 20px;
+    list-style: none;
+}
+
+form {
+    display: inline-block;
+    text-align: left;
+    width: auto;
+    padding: 0;
+    margin: 20px 0;
+    border-style: none;
+}

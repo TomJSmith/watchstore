@@ -9,9 +9,29 @@
     <div class="accountFrame">
         <h1>{{ customer.0 }} {{ customer.1 }}</h1>
         <h3>{{ customer.2 }}</h3>
+        {% if request.session.userType == 'customer' %}
+        <form method="post" action="">
+            {% csrf_token %}
+            <input type="hidden" name="userEmail" value="{{ customer.0 }}">
+            {% if areFriends %}
+                <input type="hidden" name="areFriends" value="true">
+                <input type="submit" class="button" value="stop watching {{ customer.1 }}">
+            {% else %}
+                <input type="hidden" name="areFriends" value="false">
+                <input type="submit" class="button" value="start watching {{ customer.1 }}">
+            {% endif %}
+        </form>
+        {% endif %}
         <ul class="friendsList accountSection">
-            <h2>Friends</h2>
-
+            <h2>{{ customer.1 }} is watching:</h2>
+            {% for friend in friendsList %}
+                <li>
+                    <a href="{% url 'user_profile' friend.0 %}">
+                        <h3>{{ friend.1 }} {{ friend.2 }}</h3>
+                        <h4>{{ friend.0 }}</h4>
+                    </a>
+                </li>
+            {% endfor %}
         </ul>
     </div>
 {% endblock %}

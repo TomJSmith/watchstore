@@ -126,18 +126,19 @@ def merchant(request, merchantID):
         productList = []
         with connection.cursor() as cursor:
             cursor.execute(
-                'SELECT * FROM (SELECT p.ID, p.Image, p.Name, p.Seller_Email_id, p.Brand, p.Price, AVG(r.Rating), COUNT(r.id) FROM store_product p LEFT JOIN store_product_review r ON p.ID = r.Product_ID_id GROUP BY p.ID) WHERE Seller_Email_id = %s', [merchantID])
+                'SELECT * FROM (SELECT p.ID, p.Image, p.Name, p.Seller_Email_id, p.Brand, p.Price, AVG(r.Rating), COUNT(r.id) FROM store_product p LEFT JOIN store_product_review r ON p.ID = r.Product_ID_id GROUP BY p.ID) WHERE Seller_Email_id = %s',
+                [merchantID])
             resultSet = cursor.fetchall()
             for row in resultSet:
                 productList.append({'ID': row[0],
-                                  'Image': row[1],
-                                  'Name': row[2],
-                                  'Seller_Email': row[3],
-								  'Brand': row[4],
-                                  'Price': row[5],
-                                  'Rating': row[6],
-                                  'NumReviews': row[7]})
-#        products = Product.objects.raw("SELECT * FROM store_product WHERE Seller_Email_id = %s", [merchantID])
+                                    'Image': row[1],
+                                    'Name': row[2],
+                                    'Seller_Email': row[3],
+                                    'Brand': row[4],
+                                    'Price': row[5],
+                                    'Rating': row[6],
+                                    'NumReviews': row[7]})
+                #        products = Product.objects.raw("SELECT * FROM store_product WHERE Seller_Email_id = %s", [merchantID])
         reviews = Merchant_Review.objects.raw(
             "SELECT * FROM store_merchant_review WHERE Merchant_Email_id = %s ORDER BY id DESC", [merchantID])
         merchant = Merchant.objects.raw("SELECT * FROM store_merchant WHERE EMAIL = %s", [merchantID])[0]
@@ -155,11 +156,31 @@ def merchant(request, merchantID):
 
 
 def user(request, userName):
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT FName, LName, Email FROM store_customer WHERE Email = %s", [userName])
-        theCustomer = cursor.fetchone()
-    response = "user page for user %s" % userName
-    return render(request, 'store/customerPage.html', {'customer': theCustomer})
+    if request.method == 'POST':
+        with connection.cursor() as cursor:
+            if request.POST['areFriends'] == "false":
+                cursor.execute("INSERT INTO store_friends (Friend_1_id, Friend_2_id) VALUES (%s, %s)",
+                               [request.session['userName'], userName])
+            else:
+                cursor.execute("DELETE FROM store_friends WHERE Friend_1_id=%s AND Friend_2_id=%s",
+                               [request.session['userName'], userName])
+        return redirect('user_profile', userName)
+    else:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT COUNT(*) FROM store_friends WHERE Friend_1_id=%s AND Friend_2_id=%s",
+                           [request.session['userName'], userName])
+            areFriends = False
+            if cursor.fetchone()[0] == 1:
+                areFriends = True
+            cursor.execute("SELECT FName, LName, Email FROM store_customer WHERE Email = %s", [userName])
+            theCustomer = cursor.fetchone()
+            cursor.execute(
+                "SELECT Friend_2_id, FName, LName FROM store_friends, store_customer WHERE Friend_2_id=Email AND Friend_1_id=%s",
+                [userName])
+            friends = cursor.fetchall()
+        return render(request, 'store/customerPage.html', {'customer': theCustomer,
+                                                           'areFriends': areFriends,
+                                                           'friendsList': friends})
 
 
 def search(request):
@@ -189,6 +210,10 @@ def myCustomerAccount(request):
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM store_customer WHERE Email = %s", [request.session['userName']])
         customer = cursor.fetchone()
+        cursor.execute(
+            "SELECT Friend_2_id, FName, LName FROM store_friends, store_customer WHERE Friend_2_id=Email AND Friend_1_id=%s",
+            [request.session['userName']])
+        friends = cursor.fetchall()
     cart = Cart.objects.get(Customer_Email=Customer.objects.get(pk=request.session['userName'])).Product_ID.all()
     orders = Order.objects.filter(Placed_By=Customer.objects.get(pk=request.session['userName']))  # .Order_Number.all()
     return render(request, 'store/myCustomerAccount.html', {'email': customer[0],
@@ -196,7 +221,8 @@ def myCustomerAccount(request):
                                                             'lName': customer[3],
                                                             'address': customer[4],
                                                             'cart': cart,
-                                                            'orders': orders})
+                                                            'orders': orders,
+                                                            'friendsList': friends})
 
 
 def myModeratorAccount(request):
@@ -276,7 +302,8 @@ def order(request, orderNumber):
             return redirect('store_front')
         else:
             return redirect('store_front')
-            
+
+
 def addCreditCard(request):
     if not request.session['loggedIn']:
         return redirect('store_front')
@@ -290,8 +317,10 @@ def addCreditCard(request):
                     creditCardForm.save()
                     return redirect('store_front')
                 else:
-                    creditCards = Credit_Card.objects.filter(CEmail=Customer.objects.get(pk=request.session['userName']))
-                    return render(request, 'store/checkout.html', {'creditCardForm': creditCardForm, 'creditcard': creditCards})
+                    creditCards = Credit_Card.objects.filter(
+                        CEmail=Customer.objects.get(pk=request.session['userName']))
+                    return render(request, 'store/checkout.html',
+                                  {'creditCardForm': creditCardForm, 'creditcard': creditCards})
         elif userType == 'moderator':
             return redirect('store_front')
         else:
@@ -299,5 +328,3 @@ def addCreditCard(request):
         creditCardForm = FormType()
         creditCards = Credit_Card.objects.filter(CEmail=Customer.objects.get(pk=request.session['userName']))
         return render(request, 'store/checkout.html', {'creditCardForm': creditCardForm, 'creditcard': creditCards})
-        
-
