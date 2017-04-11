@@ -75,14 +75,15 @@ def signup(request, userType):
 
 
 def product(request, productID):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT id FROM store_cart WHERE Customer_Email_id=%s",
+                       [request.session['userName']])
+        cartID = cursor.fetchone()[0]
     if request.method == 'POST':
         if 'cartButton' in request.POST:
             form = AddToCart(request.POST, request.FILES)
             if form.is_valid():
                 with connection.cursor() as cursor:
-                    cursor.execute("SELECT id FROM store_cart WHERE Customer_Email_id=%s",
-                                   [request.session['userName']])
-                    cartID = cursor.fetchone()[0]
                     cursor.execute("INSERT INTO store_cart_Product_ID (cart_id, product_id) VALUES (%s, %s)",
                                    [cartID, productID])
                 return redirect('store_front')
@@ -106,11 +107,16 @@ def product(request, productID):
             cursor.execute("SELECT AVG(Rating), COUNT(id) FROM store_product_review WHERE Product_ID_id = %s",
                            [productID])
             reviewStats = cursor.fetchone()
+            cursor.execute("SELECT COUNT(*) FROM store_cart_Product_ID WHERE cart_id=%s AND product_id=%s", [cartID, productID])
+            inCart = False
+            if cursor.fetchone()[0] > 0:
+                inCart = True
         return render(request, 'store/productPage.html', {'product': theProduct,
                                                           'avgRating': reviewStats[0],
                                                           'reviewCount': reviewStats[1],
                                                           'reviews': productReviews,
-                                                          'reviewForm': form})
+                                                          'reviewForm': form,
+                                                          'inCart': inCart})
 
 
 def merchant(request, merchantID):
