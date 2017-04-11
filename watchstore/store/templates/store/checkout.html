@@ -11,7 +11,7 @@
     <h1>Add Credit Card</h1>
     {% csrf_token %}
     {{ creditCardForm }}
-    <input class="button" type="submit" value="Add Credit Card">
+    <input class="button" name="add" type="submit" value="Add Credit Card">
 </form>
 
 <form method="post" action="/store/myAccount/checkout/orderInfo/">
